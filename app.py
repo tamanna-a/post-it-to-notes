@@ -1,6 +1,7 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, flash, render_template, redirect, request, url_for
 from flask import request
+from werkzeug.utils import secure_filename
 
 
 import torch
@@ -17,7 +18,7 @@ def answer_question(question, answer_text):
     Takes a `question` string and an `answer` string and tries to identify 
     the words within the `answer` that can answer the question. Prints them out.
     '''
-    
+
     # tokenize the input text and get the corresponding indices
     token_indices = tokenizer.encode(question, answer_text)
 
@@ -36,6 +37,7 @@ def answer_question(question, answer_text):
     start_scores, end_scores = model(torch.tensor([token_indices]), # The tokens representing our input combining question and answer.
                                     token_type_ids=torch.tensor([segment_ids])) # The segment IDs to differentiate question from answer
 
+    print('start_scores ', start_scores)
     # Find the tokens with the highest `start` and `end` scores.
     answer_begin = torch.argmax(start_scores)
     answer_end = torch.argmax(end_scores)
@@ -52,23 +54,39 @@ def answer_question(question, answer_text):
 
 
 app = Flask(__name__)
+app.secret_key = "secret key"
+app.config['IMAGE_UPLOADS'] = os.path.join(os.getcwd(), 'static/uploads')
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
+#boolean that checks whether filetype is allowed
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
-  
+def upload_image():
     if request.method == 'POST':
-      form = request.form
-      result = []
-      bert_abstract = form['paragraph']
-      question = form['question']
-      result.append(form['question'])
-      result.append(answer_question(question, bert_abstract))
-      result.append(form['paragraph'])
-
-      return render_template("index.html",result = result)
+        image = request.files["image"]
+        # check if the post request has the file part
+        if image.filename == "":
+            flash('No file selected')
+            return redirect(request.url)
+        if not allowed_file(image.filename):
+            flash('Allowed image types are -> png, jpg, jpeg, gif')
+            return redirect(request.url)
+        else:
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(app.config['IMAGE_UPLOADS'] , filename))
+            flash("image saved")
+            return render_template("index.html",filename=filename)
 
     return render_template("index.html")
+
+@app.route('/display/<filename>')
+def display_image(filename):
+    print('display_image filename: ' + filename)
+    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
