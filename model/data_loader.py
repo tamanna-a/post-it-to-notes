@@ -5,6 +5,7 @@ import random
 import itertools, os, time
 import config
 import matplotlib.pyplot as plt
+from tacobox import Taco
 
 '''
 Source: https://github.com/kartikgill/Easter2/blob/main/src/data_loader.py
@@ -101,6 +102,9 @@ class data_loader:
     def preprocess(self, img, augment=True):
         if augment:
             img = self.apply_taco_augmentations(img)
+
+        # apply a threshold to make it strongly black and white
+        (thresh, img) = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
 
         # scaling image [0, 1]
         img = img / 255

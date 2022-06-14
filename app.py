@@ -2,7 +2,7 @@ import os
 from flask import Flask, flash, render_template, redirect, request, url_for
 from flask import request
 from werkzeug.utils import secure_filename
-
+from model.postit import predict_postit
 
 import torch
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering
@@ -86,6 +86,12 @@ def upload_image():
 def display_image(filename):
     print('display_image filename: ' + filename)
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+@app.route('/display/<filename>')
+def predict(filename):
+    text = predict_postit(filename)
+    return text
+
 
 
 if __name__ == '__main__':
