@@ -1,16 +1,21 @@
-upload and display images in flask:
-https://roytuts.com/upload-and-display-image-using-python-flask/
+This project is a way to convert an image of post-it notes and extract the texts.
 
-Text detection from images:
-1. EasyOCR- 
-   1. https://www.analyticsvidhya.com/blog/2021/06/text-detection-from-images-using-easyocr-hands-on-guide/
-   2. https://www.youtube.com/watch?v=ZVKaWPW9oQY&ab_channel=NicholasRenotte
-2. Tesseract- open source ocr engine
-   1. https://www.youtube.com/watch?v=PY_N1XdFp4w&ab_channel=NeuralNine
-   2. Medium article on Tesseract vs google- https://joseurena.medium.com/tesseract-ocr-evaluating-handwritten-text-recognition-1c6db85b2e7f
-   3. youtube tesseract for handwritten text- https://www.youtube.com/watch?v=a5oeEhTf6_M&ab_channel=JoseM.Urena
+The machine learning component involves a number of Computer Vision tasks, namely **line segmentation** and **Handwriting Text Recognition.** 
+The front-end of the app is built in flask, it allows the user to upload a post it note.
 
-Dataset:
+**ML-Sub-Problems**
+I separated the ML problem into 3 components.
+
+1. Pre-Processing Post-It notes into a similar format as the training data
+2. Segmenting lines in the post-it into lines 
+3. Lines to text —> Easter2 Model
+
+For Pre-processing, I used OpenCV's functions.
+The line to text part was built by applying the Easter2 model, which is currently the SOTA non-transformer model. 
+
+Below are some resources used to aid in the project. 
+
+**Dataset**:
 IAM (IAM Handwriting)
 - 13,353 images of handwritten lines of text created by 657 writers
 - writers transcribed text from Lancaster-Oslo/Bergen Corpus of British English
@@ -21,9 +26,10 @@ IAM (IAM Handwriting)
 
 Accessing dataset:
 - You need to register first at https://fki.tic.heia-fr.ch/databases/iam-handwriting-database
-- Email- ta2642, password- MachineReadM3
 - Github repo with data download python notebook: https://github.com/kartikgill/Easter2/blob/main/notebooks/iam_dataset_download.ipynb
 - Train-test split: wget https://www.openslr.org/resources/56/splits.zip
+
+The papers can be found under model/papers directory.
 
 Citation:
 @article{chaudhary2022easter2,
@@ -33,8 +39,12 @@ Citation:
   year={2022}
 }
 
-Paper:
-Terms:
+
+Other <br>
+Flask:
+https://roytuts.com/upload-and-display-image-using-python-flask/
+
+Terminologies:
 HTR- Handwriting Text Recognition
 Squeeze and Excitation (SE) module
 Youtube lecture: https://www.youtube.com/watch?v=BSZqvObJVMg&ab_channel=MaziarRaissi
