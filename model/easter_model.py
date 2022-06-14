@@ -258,7 +258,9 @@ def train():
         monitor='loss',
         verbose=1,
         mode='min',
-        period=2
+        save_best_only=False,
+        save_weights_only=False,
+        save_freq='epoch'
     )
 
     TENSOR_BOARD = tensorflow.keras.callbacks.TensorBoard(
@@ -266,7 +268,8 @@ def train():
         histogram_freq=0,
         write_graph=True,
         write_images=False,
-        embeddings_freq=0
+        embeddings_freq=0,
+        update_freq='epoch'
     )
 
     # steps per epoch calculation based on number of samples and batch size

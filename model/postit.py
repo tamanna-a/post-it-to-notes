@@ -5,7 +5,6 @@ import config
 import numpy as np
 
 def preprocess(original_img, augment=True):
-
     # apply a threshold to make it strongly black and white
     (thresh, img) = cv2.threshold(original_img, 127, 255, cv2.THRESH_BINARY)
 
@@ -37,13 +36,25 @@ def preprocess(original_img, augment=True):
     target[:new_x, :new_y] = img2
     return 1 - (target)
 
-charlist = training_data.charList
+def get_charlist():
+    file = open('weights/charlist.txt', 'r')
+    lines = file.readlines()
+
+    charlist = []
+    for line in lines:
+        charlist.append(line.rstrip('\n'))
+    file.close()
+
+    return charlist
 
 def predict_postit(img):
     #process image
     img1 = cv2.imread(img, cv2.IMREAD_GRAYSCALE)
     img = preprocess(img1, augment=False)
     img = np.expand_dims(img, 0)
+
+    #load charlist
+    charlist = get_charlist()
 
     #load model
     model = load_easter_model(config.BEST_MODEL_PATH)

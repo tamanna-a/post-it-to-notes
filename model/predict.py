@@ -7,6 +7,7 @@ from editdistance import eval as edit_distance
 from tqdm import tqdm
 from data_loader import data_loader
 import tensorflow.keras.backend as K
+import sys
 
 
 def ctc_custom(args):
@@ -71,6 +72,10 @@ def test_on_iam(show=True, partition='test', uncased=False, checkpoint="Empty"):
     print("calculating results...")
 
     model = load_easter_model(checkpoint)
+    #raise error and exit program
+    if model is None:
+        sys.exit('Failed to Load Model Checkpoint')
+
     char_error = 0
     total_chars = 0
 
