@@ -1,21 +1,38 @@
-This project is a way to convert an image of post-it notes and extract the texts.
+# Image of handwritten notes to text
+**What does this do?**
 
-The machine learning component involves a number of Computer Vision tasks, namely **line segmentation** and **Handwriting Text Recognition.** 
-The front-end of the app is built in flask, it allows the user to upload a post it note.
+This project converts an image of post-it notes and extract the texts using deep learning based computer vision model.
 
-**ML-Sub-Problems**
-I separated the ML problem into 3 components.
+**How is this accomplished?**
 
-1. Pre-Processing Post-It notes into a similar format as the training data
-2. Segmenting lines in the post-it into lines 
-3. Lines to text —> Easter2 Model
+The machine learning component involves a number of Computer Vision tasks, namely:
+>  **Image preprocessing** -Converts post-It notes into a similar format as the training data
+> 
+>  **Line segmentation**  - Segments text in the post-it into lines 
+> 
+>  **Handwriting Text Recognition.** - Converts lines to texts using Easter2 Model, a convolution based model with dense residual connections and squeeze and excitatoin modules
 
-For Pre-processing, I used OpenCV's functions.
-The line to text part was built by applying the Easter2 model, which is currently the SOTA non-transformer model. 
+The model is trained on publicly available data.
 
-Below are some resources used to aid in the project. 
 
-**Dataset**:
+### Pre-Processing
+Training data comes line by line and looks something like this:
+![image info](training_data.png)
+I apply the following steps to normalize the images into similar format as training data
+![image info](data-processing-pipeline.png)
+### Line to text - Easter2 Model
+Easter2 Model is composed of
+1) Repeating blocks of 1-D CNN->Batch-Norm->ReLU->Dropout
+2) Dense Residual Connections
+3) Squeeze and excitaton module
+![image info](model.png)
+
+#### Squeeze and Excitation Module
+![image info](squeeze-excitation.png)
+
+Squeeze and Excitation Module or SE starts by average pooling local features, then applies 2 fully connected layer and returns a context vector.
+The context vector is multiplied element-wise with the local features.
+### Dataset
 IAM (IAM Handwriting)
 - 13,353 images of handwritten lines of text created by 657 writers
 - writers transcribed text from Lancaster-Oslo/Bergen Corpus of British English
@@ -30,8 +47,14 @@ Accessing dataset:
 - Train-test split: wget https://www.openslr.org/resources/56/splits.zip
 
 The papers can be found under model/papers directory.
+### Model Performance
+I use the standard metric of CER, or Character Error Rate.
+The state-of-the-art character error rates below 3% are achieved through internal and synthetic dataset.  
+The transformer based model TrOCR by Microsoft achieves a CER of 2.89% but they use synthetic dataset.
+Easter2 is the SOTA when using IAM Handwriting dataset only, achieving SOTA of 6.21%
 
-Citation:
+
+### Citation
 @article{chaudhary2022easter2,
   title={Easter2. 0: Improving convolutional models for handwritten text recognition},
   author={Chaudhary, Kartik and Bali, Raghav},
@@ -39,6 +62,8 @@ Citation:
   year={2022}
 }
 
+
+Below are some resources used to aid in the project. 
 
 Other <br>
 Flask:
